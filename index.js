@@ -6,7 +6,7 @@ const fs = require("fs");
 const dailyNoteTitle = "Today's Meetings.md"
 // Path to macOS Calendar DB
 const dbPath = "/Users/mike/Library/Group Containers/group.com.apple.calendar/Calendar.sqlitedb";
-const calendarName = "Turing";
+const calendarName = "WorkCalendar";
 const vaultPath = "/Users/mike/Library/Mobile Documents/iCloud~md~obsidian/Documents/Mikes iCloud Notes";
 
 // Open DB
