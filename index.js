@@ -1,6 +1,7 @@
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 const fs = require("fs");
+const { cleanTitle } = require('./utilities');
 
 // Constants - need to be customized
 const dailyNoteTitle = "Today's Meetings.md"
@@ -42,7 +43,7 @@ function writePage(events) {
     events.forEach(event => {
       pageText += `${formatter.format(event.start)}`;
       pageText += `- ${formatter.format(event.end)}   `;
-      pageText += `**[[${event.title}]]**  \n\n`;
+      pageText += `**[[${cleanTitle(event.title)}]]**  \n\n`;
     });
   } else {
     pageText += "\n\n#### No meetings today!\n";
