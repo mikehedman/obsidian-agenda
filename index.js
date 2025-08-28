@@ -28,9 +28,6 @@ midnight.setHours(0, 0, 0, 0);
 //adjust for how sqlite works with dates
 let beginDay = new Date((midnight.getTime()/1000 - macEpoch));
 const beginDaySeconds = beginDay.getTime();
-let endDay = new Date();
-endDay.setHours(23, 59, 59, 999);
-endDay = new Date((endDay.getTime()/1000 - macEpoch));
 
 function writePage(events) {
   const formatter = new Intl.DateTimeFormat('en-US', {
