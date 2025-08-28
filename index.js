@@ -11,6 +11,44 @@ const dbPath = "/Users/mike/Library/Group Containers/group.com.apple.calendar/Ca
 const calendarName = "WorkCalendar";
 const vaultPath = "/Users/mike/Library/Mobile Documents/iCloud~md~obsidian/Documents/Mikes iCloud Notes";
 
+// Function to find and kill a Mac process
+function killProcess(processName) {
+  exec(`ps -eo pid,command | grep ${processName}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error finding processes: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`stderr: ${stderr}`);
+      return;
+    }
+
+    const lines = stdout.split('\n').filter(line => line.includes(processName) && !line.includes('grep'));
+    if (lines.length === 0) {
+      console.log(`No ${processName} processes found.`);
+      return;
+    }
+
+    const pid = lines[0].split(/\s+/)[0];
+
+    if (pid) {
+      exec(`kill -9 ${pid}`, (killError, killStdout, killStderr) => {
+        if (killError) {
+          console.error(`Error killing process ${pid}: ${killError.message}`);
+          return;
+        }
+        if (killStderr) {
+          console.error(`Kill stderr: ${killStderr}`);
+          return;
+        }
+        console.log(`${processName} process with PID ${pid} terminated.`);
+      });
+    } else {
+      console.log('Could not extract PID from process list.');
+    }
+  });
+}
+
 // Open DB
 const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY, (err) => {
   if (err) {
@@ -104,6 +142,8 @@ async function main() {
   } finally {
     db.close();
   }
+  //outlook calendar items stopped syncing after awhile, so kill the process to force a restart
+  killProcess('exchangesyncd');
 }
 
 main();
