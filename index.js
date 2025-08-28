@@ -1,6 +1,7 @@
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 const fs = require("fs");
+const { exec } = require('child_process');
 const { cleanTitle } = require('./utilities');
 
 // Constants - need to be customized
