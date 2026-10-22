@@ -35,16 +35,16 @@ On first launch, grant **Calendar** access when prompted.
 Defaults live in `Sources/MeetingReminder/Config.swift`. Override them with `defaults`:
 
 ```bash
-defaults write com.mike.MeetingReminder calendarName "Work"
-defaults write com.mike.MeetingReminder vaultPath "/path/to/vault"
-defaults write com.mike.MeetingReminder newMeetingsFolder "Work/Meetings"
+defaults write app.meetingreminder.MeetingReminder calendarName "Work"
+defaults write app.meetingreminder.MeetingReminder vaultPath "/path/to/vault"
+defaults write app.meetingreminder.MeetingReminder newMeetingsFolder "Work/Meetings"
 ```
 
 | Key | Purpose | Default |
 | --- | --- | --- |
 | `calendarName` | Mac Calendar to read events from | `Calendar` |
-| `vaultPath` | Obsidian vault path | iCloud vault `Mikes iCloud Notes` |
-| `newMeetingsFolder` | Vault folder for new meeting notes | `Work/Turing Medical/Turing Meetings` |
+| `vaultPath` | Obsidian vault path | `~/Documents/Obsidian` |
+| `newMeetingsFolder` | Vault folder for new meeting notes | `Meetings` |
 
 ## Layout
 
@@ -60,6 +60,6 @@ build-app.sh                   Builds, signs, and optionally installs the .app
 If you used the old Node script, retire its launchd job once the app is working:
 
 ```bash
-launchctl bootout gui/$(id -u)/com.mike.obsidian-agenda
-rm ~/Library/LaunchAgents/com.mike.obsidian-agenda.plist
+launchctl bootout gui/$(id -u)/<your-job-label>
+rm ~/Library/LaunchAgents/<your-job-label>.plist
 ```
