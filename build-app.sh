@@ -26,6 +26,7 @@ PLIST
 codesign --force --sign - "$APP"
 if [ "${1:-}" = "install" ]; then
   pkill -x MeetingReminder || true
+  while pgrep -x MeetingReminder >/dev/null; do sleep 0.2; done
   rm -rf /Applications/MeetingReminder.app
   cp -R "$APP" /Applications/
   open /Applications/MeetingReminder.app

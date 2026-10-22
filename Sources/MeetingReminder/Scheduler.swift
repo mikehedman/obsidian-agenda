@@ -18,7 +18,7 @@ final class Scheduler: NSObject, NSMenuDelegate {
     private var loadedDay = Calendar.current.startOfDay(for: Date())
 
     func start() {
-        statusItem.button?.image = NSImage(systemSymbolName: "calendar", accessibilityDescription: "Meetings")
+        statusItem.button?.image = Self.idleIcon
         statusItem.button?.target = self
         statusItem.button?.action = #selector(statusClicked)
         statusItem.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
@@ -94,10 +94,19 @@ final class Scheduler: NSObject, NSMenuDelegate {
         if let (meeting, stage) = current { alerts.show(stage: stage, meeting: meeting, now: now) } else { alerts.clear() }
     }
 
+    /// Larger, heavier symbol than the menu bar default so it doesn't read as a plain box.
+    private static let idleIcon: NSImage? = {
+        let config = NSImage.SymbolConfiguration(pointSize: 17, weight: .medium)
+        let image = NSImage(systemSymbolName: "calendar.badge.clock", accessibilityDescription: "Meetings")?
+            .withSymbolConfiguration(config)
+        image?.isTemplate = true
+        return image
+    }()
+
     private func updateStatus(now: Date, next: Meeting?, stage: AlertStage = .none) {
         guard let button = statusItem.button else { return }
         guard let next, stage != .none else {
-            button.image = NSImage(systemSymbolName: "calendar", accessibilityDescription: "Meetings")
+            button.image = Self.idleIcon
             button.attributedTitle = NSAttributedString(string: "")
             return
         }
