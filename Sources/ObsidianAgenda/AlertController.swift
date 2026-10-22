@@ -1,5 +1,5 @@
 import AppKit
-import MeetingReminderCore
+import ObsidianAgendaCore
 
 /// Click-anywhere view used by banner and overlay windows.
 final class ClickView: NSView {

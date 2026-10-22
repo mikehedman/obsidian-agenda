@@ -1,5 +1,5 @@
 import Foundation
-import MeetingReminderCore
+import ObsidianAgendaCore
 
 /// Writes "Today's Meetings.md" and resolves the note to open for a meeting.
 final class ObsidianWriter {

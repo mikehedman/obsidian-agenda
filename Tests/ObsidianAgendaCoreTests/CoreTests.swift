@@ -1,5 +1,5 @@
 import XCTest
-@testable import MeetingReminderCore
+@testable import ObsidianAgendaCore
 
 final class CoreTests: XCTestCase {
     func testCleanTitle() {

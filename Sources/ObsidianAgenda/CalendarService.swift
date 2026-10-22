@@ -1,5 +1,5 @@
 import EventKit
-import MeetingReminderCore
+import ObsidianAgendaCore
 
 final class CalendarService {
     private let store = EKEventStore()
@@ -16,13 +16,20 @@ final class CalendarService {
             forName: .EKEventStoreChanged, object: store, queue: .main) { _ in handler() }
     }
 
+    /// Titles of every event calendar, for the settings picker.
+    func calendarTitles() -> [String] {
+        var seen = Set<String>()
+        return store.calendars(for: .event).map(\.title).filter { seen.insert($0).inserted }.sorted()
+    }
+
     func todaysMeetings() -> [Meeting] {
         let calendars = store.calendars(for: .event).filter { $0.title == Config.calendarName }
         guard !calendars.isEmpty else {
+            // Keep the menu message short; the full calendar list goes to the log only.
             let all = store.calendars(for: .event)
             let names = all.map { "\($0.title) [\($0.source.title)]" }.joined(separator: ", ")
-            problem = "No calendar named \"\(Config.calendarName)\" (access: \(EKEventStore.authorizationStatus(for: .event).rawValue), \(all.count) visible: \(names))"
-            NSLog("MeetingReminder: \(problem ?? "")")
+            NSLog("ObsidianAgenda: no calendar named \"\(Config.calendarName)\" (access: \(EKEventStore.authorizationStatus(for: .event).rawValue), \(all.count) visible: \(names))")
+            problem = "Calendar \"\(Config.calendarName)\" not found"
             return []
         }
         problem = nil

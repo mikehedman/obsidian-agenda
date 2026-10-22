@@ -1,6 +1,6 @@
 import AppKit
 import ServiceManagement
-import MeetingReminderCore
+import ObsidianAgendaCore
 
 /// Owns the meeting list, the menu bar item, and drives alert stages.
 final class Scheduler: NSObject, NSMenuDelegate {
@@ -15,6 +15,9 @@ final class Scheduler: NSObject, NSMenuDelegate {
     private var stickyOverlay: Meeting?
     private var alertingMeeting: Meeting?
     private var lastWrite = Date.distantPast
+    private lazy var settings = SettingsWindowController(
+        calendarTitles: { [weak self] in self?.calendar.calendarTitles() ?? [] },
+        onSave: { [weak self] in self?.refresh() })
     private var loadedDay = Calendar.current.startOfDay(for: Date())
 
     func start() {
@@ -139,7 +142,7 @@ final class Scheduler: NSObject, NSMenuDelegate {
             menu.addItem(.separator())
         }
         if let problem = calendar.problem {
-            menu.addItem(withTitle: problem, action: nil, keyEquivalent: "").isEnabled = false
+            menu.addItem(withTitle: String(problem.prefix(60)), action: nil, keyEquivalent: "").isEnabled = false
         } else if let next = meetings.first(where: { $0.start > now && !dismissed.contains($0.id) }) {
             let f = DateFormatter()
             f.dateFormat = "h:mm a"
@@ -150,6 +153,7 @@ final class Scheduler: NSObject, NSMenuDelegate {
         }
         menu.addItem(.separator())
         addItem(menu, "Refresh now", #selector(refreshClicked))
+        addItem(menu, "Settings…", #selector(settingsClicked))
         addItem(menu, "Test alert", #selector(testClicked))
         let status = SMAppService.mainApp.status
         if status == .requiresApproval {
@@ -185,6 +189,7 @@ final class Scheduler: NSObject, NSMenuDelegate {
 
     @objc private func dismissAlerting() { if let m = alertingMeeting { dismiss(m) } }
     @objc private func refreshClicked() { refresh() }
+    @objc private func settingsClicked() { settings.present() }
     @objc private func testClicked() { startTestAlert() }
     @objc private func quit() { NSApp.terminate(nil) }
     @objc private func openLoginItems() { SMAppService.openSystemSettingsLoginItems() }

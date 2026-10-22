@@ -2,11 +2,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "MeetingReminder",
+    name: "ObsidianAgenda",
     platforms: [.macOS(.v14)],
     targets: [
-        .target(name: "MeetingReminderCore"),
-        .executableTarget(name: "MeetingReminder", dependencies: ["MeetingReminderCore"]),
-        .testTarget(name: "MeetingReminderCoreTests", dependencies: ["MeetingReminderCore"]),
+        .target(name: "ObsidianAgendaCore"),
+        .executableTarget(name: "ObsidianAgenda", dependencies: ["ObsidianAgendaCore"]),
+        .testTarget(name: "ObsidianAgendaCoreTests", dependencies: ["ObsidianAgendaCore"]),
     ]
 )

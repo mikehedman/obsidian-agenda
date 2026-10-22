@@ -1,4 +1,4 @@
-# MeetingReminder
+# ObsidianAgenda
 
 A native macOS menu bar app that turns your Mac Calendar into an Obsidian daily agenda and gives you silent, escalating on-screen meeting reminders.
 
@@ -24,7 +24,7 @@ It replaces this repo's original Node.js script + launchd job. The old version i
 
 ```bash
 swift test               # run the core tests
-./build-app.sh           # build build/MeetingReminder.app (ad hoc signed)
+./build-app.sh           # build build/ObsidianAgenda.app (ad hoc signed)
 ./build-app.sh install   # build, copy to /Applications, and launch
 ```
 
@@ -32,12 +32,14 @@ On first launch, grant **Calendar** access when prompted.
 
 ## Configuration
 
-Defaults live in `Sources/MeetingReminder/Config.swift`. Override them with `defaults`:
+Click the menu bar icon and choose **Settings…** to pick the calendar (from a list of your actual calendars), the Obsidian vault folder, and the folder for new meeting notes.
+
+The settings are stored with `defaults`, so you can also change them from Terminal, then restart the app:
 
 ```bash
-defaults write app.meetingreminder.MeetingReminder calendarName "Work"
-defaults write app.meetingreminder.MeetingReminder vaultPath "/path/to/vault"
-defaults write app.meetingreminder.MeetingReminder newMeetingsFolder "Work/Meetings"
+defaults write app.obsidianagenda.ObsidianAgenda calendarName "Work"
+defaults write app.obsidianagenda.ObsidianAgenda vaultPath "/path/to/vault"
+defaults write app.obsidianagenda.ObsidianAgenda newMeetingsFolder "Work/Meetings"
 ```
 
 | Key | Purpose | Default |
@@ -49,8 +51,8 @@ defaults write app.meetingreminder.MeetingReminder newMeetingsFolder "Work/Meeti
 ## Layout
 
 ```
-Sources/MeetingReminderCore/   Meeting model and note generation (unit tested)
-Sources/MeetingReminder/       App: calendar access, scheduler, alerts, Obsidian writer
+Sources/ObsidianAgendaCore/   Meeting model and note generation (unit tested)
+Sources/ObsidianAgenda/       App: calendar access, scheduler, alerts, Obsidian writer
 Tests/                         Core tests
 build-app.sh                   Builds, signs, and optionally installs the .app
 ```
