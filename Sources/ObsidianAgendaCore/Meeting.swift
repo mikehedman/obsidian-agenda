@@ -22,7 +22,7 @@ public enum AlertStage: Int, Comparable {
 
     public static func < (a: AlertStage, b: AlertStage) -> Bool { a.rawValue < b.rawValue }
 
-    /// T-5 min: countdown in the menu bar, T-3: banner on every screen, T-1: flashing overlay on every screen.
+    /// T-5 min: countdown in the menu bar, T-3: banner on every screen, T-1: the banner flashes on every screen until clicked.
     public static func stage(timeToStart: TimeInterval, timeScale: Double = 1) -> AlertStage {
         if timeToStart <= 0 { return .none }
         let minutes = timeToStart / (60 * timeScale)

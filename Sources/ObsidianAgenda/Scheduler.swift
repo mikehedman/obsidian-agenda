@@ -29,6 +29,7 @@ final class Scheduler: NSObject, NSMenuDelegate {
         alerts.onDismiss = { [weak self] meeting in self?.dismiss(meeting) }
         alerts.onOpenNote = { [weak self] meeting in
             if let url = self?.writer.noteURL(for: meeting) { NSWorkspace.shared.open(url) }
+            self?.dismiss(meeting)
         }
         registerLoginItemIfNeeded()
 

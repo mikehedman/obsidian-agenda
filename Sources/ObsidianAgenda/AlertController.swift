@@ -13,7 +13,7 @@ final class AlertPanel: NSPanel {
     override var canBecomeMain: Bool { false }
 }
 
-/// Shows the banner (T-3) and flashing overlay (T-1) on every screen.
+/// Shows the banner (T-3) and the same banner flashing until clicked (T-1) on every screen.
 final class AlertController {
     var onDismiss: ((Meeting) -> Void)?
     var onOpenNote: ((Meeting) -> Void)?
@@ -70,7 +70,7 @@ final class AlertController {
         shownMeeting = meeting
         let overlay = stage == .overlay
         for screen in NSScreen.screens {
-            let frame = overlay ? screen.frame : Self.bannerFrame(on: screen)
+            let frame = Self.bannerFrame(on: screen)
             let panel = AlertPanel(contentRect: frame, styleMask: [.borderless, .nonactivatingPanel],
                                    backing: .buffered, defer: false)
             panel.isOpaque = false
@@ -83,18 +83,17 @@ final class AlertController {
             background.wantsLayer = true
             background.layer?.backgroundColor = (overlay ? NSColor.systemRed : NSColor.systemOrange)
                 .withAlphaComponent(0.92).cgColor
-            background.layer?.cornerRadius = overlay ? 0 : 18
+            background.layer?.cornerRadius = 18
             background.onClick = { [weak self] in self?.onDismiss?(meeting) }
             panel.contentView = background
 
-            let title = Self.label(meeting.title, size: overlay ? 72 : 28, weight: .bold)
-            let countdown = Self.label("", size: overlay ? 44 : 20, weight: .medium)
+            let title = Self.label(meeting.title, size: 28, weight: .bold)
+            let countdown = Self.label("", size: 20, weight: .medium)
             let button = NSButton(title: "Open note", target: nil, action: nil)
             button.bezelStyle = .rounded
-            button.controlSize = overlay ? .large : .regular
             let stack = NSStackView(views: [title, countdown, button])
             stack.orientation = .vertical
-            stack.spacing = overlay ? 24 : 8
+            stack.spacing = 8
             stack.translatesAutoresizingMaskIntoConstraints = false
             background.addSubview(stack)
             NSLayoutConstraint.activate([

@@ -10,7 +10,7 @@ It replaces this repo's original Node.js script + launchd job. The old version i
 - **Escalating, silent reminders** on every monitor:
   - **T-5 min**: amber countdown in the menu bar.
   - **T-3 min**: banner.
-  - **T-1 min**: flashing overlay that stays until clicked.
+  - **T-1 min**: the banner flashes and stays until clicked.
 - **Open note**: jumps to the meeting's Obsidian page (creating it in the new-meetings folder if needed).
 - **Login Item**: registers itself on first launch; toggle it from the app's menu.
 
