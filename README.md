@@ -1,33 +1,65 @@
-# obsidian-agenda
-Creates a daily agenda view in Obsidian based on a Mac calendar. This code is very specific to how Mac Calendar stores its data, so Windows or Linux use is not supported.
+# MeetingReminder
 
-### Installation
-1. Clone or download this repository.
-2. CD into the directory and run `npm install` to install dependencies.
-3. Edit lines in the `// Constants` section in `index.js` to set your preferences:
-- `dailyNoteTitle`: Name for the daily agenda note.
-- `dbPath`: Path to the Calendar database file.
-- `calendarName`: Name of the Mac calendar to pull events from.
-- `vaultPath`: Path to your Obsidian vault.
-Note: if you will be using a cron job to run the script, make sure to use absolute paths.
+A native macOS menu bar app that turns your Mac Calendar into an Obsidian daily agenda and gives you silent, escalating on-screen meeting reminders.
 
-### Usage
-Run the script with `node index.js`. It will create or update a daily agenda note in your Obsidian vault with events from the specified Mac calendar for the current day.
+It replaces this repo's original Node.js script + launchd job. The old version is still available in the git history (everything before the Swift rewrite commit).
 
-##### cron Job (Optional)
-To automate the agenda creation, you can set up a cron job to run the script at a specific time each day. For example, to run it every day at 7 AM, add the following line to your crontab (edit with `crontab -e`):
-```0 7 * * * /usr/local/bin/node /path/to/your/repo/index.js``` 
-Make sure to replace `/usr/local/bin/node` with the path to your Node.js binary and `/path/to/your/repo/index.js` with the path to the script.
-Personally, I've set it to run hourly on weekdays to keep my agenda up to date throughout the day. I've also added logging to capture any errors or output from the script. Here's the cron job line I used:"
-```0 * * * 1-5 /usr/local/bin/node /path/to/your/repo/index.js >> /path/to/your/repo/cron_log 2>&1```
+## Features
 
-When run via a cron job, node will probably not have permission to open the Mac Calendar database. 
-**How to grant Full Disk Access:**
-1. Go to **System Settings > Privacy & Security > Full Disk Access**.
-2. Click the `+` icon.
-3. Press `Command + Shift + G` to bring up the "Go to Folder" dialog and type `/usr/local/bin` (change this if your nodejs is installed somewhere else!).
-4. Select `node` from the list and click "Open".
+- **Daily agenda note**: writes `Today's Meetings.md` in your Obsidian vault from a Mac Calendar.
+- **Escalating, silent reminders** on every monitor:
+  - **T-5 min**: amber countdown in the menu bar.
+  - **T-3 min**: banner.
+  - **T-1 min**: flashing overlay that stays until clicked.
+- **Open note**: jumps to the meeting's Obsidian page (creating it in the new-meetings folder if needed).
+- **Login Item**: registers itself on first launch; toggle it from the app's menu.
 
-### Notes
-- For quick access to the daily agenda note in Obsidian, I pinned it to the sidebar. 
-- I was not able to find any comprehensive documentation on the structure of the Mac Calendar database - particularly for recurring events. So this script may not cover all edge cases. Feel free to modify it to suit your needs.
+## Requirements
+
+- macOS 14 or later
+- Swift 5.9+ toolchain (Xcode or Command Line Tools)
+- Obsidian, with the vault on the same Mac
+
+## Build and install
+
+```bash
+swift test               # run the core tests
+./build-app.sh           # build build/MeetingReminder.app (ad hoc signed)
+./build-app.sh install   # build, copy to /Applications, and launch
+```
+
+On first launch, grant **Calendar** access when prompted.
+
+## Configuration
+
+Defaults live in `Sources/MeetingReminder/Config.swift`. Override them with `defaults`:
+
+```bash
+defaults write com.mike.MeetingReminder calendarName "Work"
+defaults write com.mike.MeetingReminder vaultPath "/path/to/vault"
+defaults write com.mike.MeetingReminder newMeetingsFolder "Work/Meetings"
+```
+
+| Key | Purpose | Default |
+| --- | --- | --- |
+| `calendarName` | Mac Calendar to read events from | `Calendar` |
+| `vaultPath` | Obsidian vault path | iCloud vault `Mikes iCloud Notes` |
+| `newMeetingsFolder` | Vault folder for new meeting notes | `Work/Turing Medical/Turing Meetings` |
+
+## Layout
+
+```
+Sources/MeetingReminderCore/   Meeting model and note generation (unit tested)
+Sources/MeetingReminder/       App: calendar access, scheduler, alerts, Obsidian writer
+Tests/                         Core tests
+build-app.sh                   Builds, signs, and optionally installs the .app
+```
+
+## Migrating from the Node script
+
+If you used the old Node script, retire its launchd job once the app is working:
+
+```bash
+launchctl bootout gui/$(id -u)/com.mike.obsidian-agenda
+rm ~/Library/LaunchAgents/com.mike.obsidian-agenda.plist
+```
