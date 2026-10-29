@@ -30,6 +30,24 @@ swift test               # run the core tests
 
 On first launch, grant **Calendar** access when prompted.
 
+Plain `./build-app.sh` does not touch the copy in `/Applications`; use `install` to update the running app.
+
+## Versioning and releases
+
+The app version comes from the latest `vX.Y.Z` git tag ([semantic versioning](https://semver.org)), and the build number is the short commit hash, with `-dirty` appended when `Sources/` or `Package.swift` have uncommitted changes. The menu shows both, e.g. **Version 1.1.0 (b853e40)**, so you can confirm which build is running.
+
+To cut a release:
+
+```bash
+swift test
+git commit -am "..."                       # commit the change
+git tag -a v1.2.0 -m "v1.2.0: summary"     # bump patch for fixes, minor for features, major for breaking changes
+./build-app.sh install                     # build, install to /Applications, and relaunch
+git push --follow-tags                     # push the commit and the tag
+```
+
+Then check that the menu shows the new version and commit.
+
 ## Configuration
 
 Click the menu bar icon and choose **Settings…** to pick the calendar (from a list of your actual calendars), the Obsidian vault folder, and the folder for new meeting notes.
