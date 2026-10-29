@@ -164,6 +164,9 @@ final class Scheduler: NSObject, NSMenuDelegate {
             item.state = status == .enabled ? .on : .off
         }
         menu.addItem(.separator())
+        let info = Bundle.main.infoDictionary
+        let version = "\(info?["CFBundleShortVersionString"] ?? "dev") (\(info?["CFBundleVersion"] ?? "dev"))"
+        menu.addItem(withTitle: "Version \(version)", action: nil, keyEquivalent: "").isEnabled = false
         addItem(menu, "Quit", #selector(quit))
     }
 

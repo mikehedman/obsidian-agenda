@@ -3,6 +3,10 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 swift build -c release
+# Version comes from the latest vX.Y.Z tag; the build number is the exact commit.
+TAG=$(git describe --tags --abbrev=0 --match 'v[0-9]*.[0-9]*.[0-9]*' 2>/dev/null || echo v0.0.0)
+VERSION=${TAG#v}
+COMMIT=$(git rev-parse --short HEAD)$(git diff --quiet HEAD -- Sources Package.swift || echo "-dirty")
 APP=build/ObsidianAgenda.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS"
@@ -15,8 +19,8 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>CFBundleName</key><string>ObsidianAgenda</string>
   <key>CFBundleExecutable</key><string>ObsidianAgenda</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleVersion</key><string>1</string>
-  <key>CFBundleShortVersionString</key><string>1.0</string>
+  <key>CFBundleVersion</key><string>$COMMIT</string>
+  <key>CFBundleShortVersionString</key><string>$VERSION</string>
   <key>LSMinimumSystemVersion</key><string>14.0</string>
   <key>LSUIElement</key><true/>
   <key>NSCalendarsFullAccessUsageDescription</key>
@@ -31,4 +35,4 @@ if [ "${1:-}" = "install" ]; then
   cp -R "$APP" /Applications/
   open /Applications/ObsidianAgenda.app
 fi
-echo "Built $APP"
+echo "Built $APP (version $VERSION, build $COMMIT)"
