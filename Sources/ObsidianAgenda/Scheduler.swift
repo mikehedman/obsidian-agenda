@@ -14,7 +14,7 @@ final class Scheduler: NSObject, NSMenuDelegate {
     private var dismissed = Set<String>()
     private var stickyOverlay: Meeting?
     private var alertingMeeting: Meeting?
-    private var lastWrite = Date.distantPast
+    private var lastRefresh = Date.distantPast
     private lazy var settings = SettingsWindowController(
         calendarTitles: { [weak self] in self?.calendar.calendarTitles() ?? [] },
         onSave: { [weak self] in self?.refresh() })
@@ -45,10 +45,10 @@ final class Scheduler: NSObject, NSMenuDelegate {
 
     func refresh() {
         meetings = calendar.todaysMeetings()
-        loadedDay = Calendar.current.startOfDay(for: Date())
+        lastRefresh = Date()
+        loadedDay = Calendar.current.startOfDay(for: lastRefresh)
         let snapshot = meetings
         if Notes.isNoteWindowOpen(Date()) {
-            lastWrite = Date()
             DispatchQueue.global(qos: .utility).async { [writer] in writer.write(meetings: snapshot) }
         }
         tick()
@@ -73,7 +73,7 @@ final class Scheduler: NSObject, NSMenuDelegate {
 
     private func tick() {
         let now = Date()
-        if Calendar.current.startOfDay(for: now) != loadedDay || now.timeIntervalSince(lastWrite) > 3600 {
+        if Calendar.current.startOfDay(for: now) != loadedDay || now.timeIntervalSince(lastRefresh) > 3600 {
             refresh()
             return
         }
