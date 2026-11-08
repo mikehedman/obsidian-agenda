@@ -41,7 +41,8 @@ final class CalendarService {
             .sorted { $0.startDate < $1.startDate }
             .map {
                 Meeting(id: "\($0.eventIdentifier ?? $0.title ?? "event")-\($0.startDate.timeIntervalSince1970)",
-                        title: $0.title ?? "(No title)", start: $0.startDate, end: $0.endDate)
+                        title: $0.title ?? "(No title)", start: $0.startDate, end: $0.endDate,
+                        joinURL: MeetingLink.find(in: [$0.url?.absoluteString, $0.location, $0.notes]))
             }
     }
 

@@ -3,10 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 swift build -c release
-# Version comes from the latest vX.Y.Z tag; the build number is the exact commit.
-TAG=$(git describe --tags --abbrev=0 --match 'v[0-9]*.[0-9]*.[0-9]*' 2>/dev/null || echo v0.0.0)
-VERSION=${TAG#v}
-COMMIT=$(git rev-parse --short HEAD)$(git diff --quiet HEAD -- Sources Package.swift || echo "-dirty")
+# Version comes from the VERSION file; the build number is the exact commit.
+VERSION=$(tr -d '[:space:]' < VERSION)
+COMMIT=$(git rev-parse --short HEAD)$(git diff --quiet HEAD -- Sources Package.swift VERSION || echo "-dirty")
 APP=build/ObsidianAgenda.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS"
@@ -24,7 +23,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>LSMinimumSystemVersion</key><string>14.0</string>
   <key>LSUIElement</key><true/>
   <key>NSCalendarsFullAccessUsageDescription</key>
-  <string>ObsidianAgenda reads your meetings to remind you before they start and to write your daily Obsidian note.</string>
+  <string>ObsidianAgenda reads your meetings to remind you before they start and to open their Obsidian notes.</string>
 </dict></plist>
 PLIST
 codesign --force --sign - "$APP"

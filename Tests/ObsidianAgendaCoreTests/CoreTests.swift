@@ -50,4 +50,29 @@ final class CoreTests: XCTestCase {
         XCTAssertEqual(new?.host, "new")
         XCTAssertTrue(new?.absoluteString.contains("vault=My%20Vault") ?? false)
     }
+
+    func testMeetingLinks() {
+        let teams = "https://teams.microsoft.com/l/meetup-join/19%3ameeting_abc%40thread.v2/0?context=%7b%22Tid%22%3a%221%22%7d"
+        let notes = """
+        Agenda: https://example.com/doc
+        ________________________________________________________________________________
+        Microsoft Teams meeting
+        Join on your computer, mobile app or room device
+        Click here to join the meeting<\(teams)>
+        """
+        XCTAssertEqual(MeetingLink.find(in: [nil, "Conf Room 4", notes])?.absoluteString, teams)
+        XCTAssertEqual(MeetingLink.nativeURL(for: URL(string: teams)!)?.absoluteString,
+                       "msteams:/l/meetup-join/19%3ameeting_abc%40thread.v2/0?context=%7b%22Tid%22%3a%221%22%7d")
+
+        let zoom = MeetingLink.find(in: ["https://acme.zoom.us/j/81234567890?pwd=AbC123.1", nil])
+        XCTAssertEqual(zoom?.absoluteString, "https://acme.zoom.us/j/81234567890?pwd=AbC123.1")
+        XCTAssertEqual(MeetingLink.nativeURL(for: zoom!)?.absoluteString,
+                       "zoommtg://acme.zoom.us/join?action=join&confno=81234567890&pwd=AbC123.1")
+
+        let safe = "https://nam12.safelinks.protection.outlook.com/?url=https%3A%2F%2Fmeet.google.com%2Fabc-defg-hij&data=x"
+        XCTAssertEqual(MeetingLink.find(in: ["See " + safe])?.absoluteString, "https://meet.google.com/abc-defg-hij")
+        XCTAssertNil(MeetingLink.nativeURL(for: URL(string: "https://meet.google.com/abc-defg-hij")!))
+
+        XCTAssertNil(MeetingLink.find(in: ["https://zoom.us/pricing", "https://example.com", nil]))
+    }
 }

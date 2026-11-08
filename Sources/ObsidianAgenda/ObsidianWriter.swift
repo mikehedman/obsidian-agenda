@@ -5,13 +5,13 @@ import ObsidianAgendaCore
 final class ObsidianWriter {
     private(set) var noteNames = Set<String>()
 
-    /// Rescans the vault and rewrites the daily note. Call off the main thread.
+    /// Rescans the vault and rewrites the Today's Meetings agenda. Call off the main thread.
     func write(meetings: [Meeting]) {
         noteNames = Notes.scanVault(Config.vaultURL)
         let text = Notes.render(day: Calendar.current.startOfDay(for: Date()), meetings: meetings,
                                 noteNames: noteNames, newMeetingsFolder: Config.newMeetingsFolder,
                                 generatedAt: Date())
-        let file = Config.vaultURL.appendingPathComponent(Notes.dailyNoteTitle)
+        let file = Config.vaultURL.appendingPathComponent(Notes.agendaNoteTitle)
         do {
             try text.write(to: file, atomically: true, encoding: .utf8)
         } catch {

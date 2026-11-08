@@ -1,17 +1,18 @@
 # ObsidianAgenda
 
-A native macOS menu bar app that turns your Mac Calendar into an Obsidian daily agenda and gives you silent, escalating on-screen meeting reminders.
+A native macOS menu bar app that gives you silent, escalating on-screen meeting reminders and opens an Obsidian note for each meeting.
 
 It replaces this repo's original Node.js script + launchd job. The old version is still available in the git history (everything before the Swift rewrite commit).
 
 ## Features
 
-- **Daily agenda note**: writes `Today's Meetings.md` in your Obsidian vault from a Mac Calendar.
+- **Meeting agenda**: keeps `Today's Meetings.md` in your Obsidian vault, listing today's meetings with links to each meeting's note. This is a plain note, not an Obsidian Daily Note.
 - **Escalating, silent reminders** on every monitor:
   - **T-5 min**: amber countdown in the menu bar.
   - **T-3 min**: banner.
   - **T-1 min**: the banner flashes and stays until clicked.
-- **Open note**: jumps to the meeting's Obsidian page (creating it in the new-meetings folder if needed).
+- **Open note**: opens the Obsidian note named after the meeting title, or creates it in the new-meetings folder if it doesn't exist.
+- **Join / Join + open note**: shown when the event has a Zoom, Teams, Google Meet, or Webex link (also inside Outlook Safe Links). Zoom and Teams links open straight in the app when it's installed.
 - **Login Item**: registers itself on first launch; toggle it from the app's menu.
 
 ## Requirements
@@ -34,16 +35,20 @@ Plain `./build-app.sh` does not touch the copy in `/Applications`; use `install`
 
 ## Versioning and releases
 
-The app version comes from the latest `vX.Y.Z` git tag ([semantic versioning](https://semver.org)), and the build number is the short commit hash, with `-dirty` appended when `Sources/` or `Package.swift` have uncommitted changes. The menu shows both, e.g. **Version 1.1.0 (b853e40)**, so you can confirm which build is running.
+The app version comes from the `VERSION` file ([semantic versioning](https://semver.org)), and the build number is the short commit hash, with `-dirty` appended when `Sources/`, `Package.swift`, or `VERSION` have uncommitted changes. The menu shows both, e.g. **Version 1.2.0 (b853e40)**, so you can confirm which build is running.
 
-To cut a release:
+Every change goes through a pull request, and the version bump is part of it:
 
 ```bash
+git checkout -b my-change                  # never commit directly to main
+# edit code, and bump VERSION: patch for fixes, minor for features, major for breaking changes
 swift test
-git commit -am "..."                       # commit the change
-git tag -a v1.2.0 -m "v1.2.0: summary"     # bump patch for fixes, minor for features, major for breaking changes
+git commit -am "..."
+git push -u origin my-change
+gh pr create --fill                        # review, then merge on GitHub
+
+git checkout main && git pull              # after the merge
 ./build-app.sh install                     # build, install to /Applications, and relaunch
-git push --follow-tags                     # push the commit and the tag
 ```
 
 Then check that the menu shows the new version and commit.
@@ -73,13 +78,5 @@ Sources/ObsidianAgendaCore/   Meeting model and note generation (unit tested)
 Sources/ObsidianAgenda/       App: calendar access, scheduler, alerts, Obsidian writer
 Tests/                         Core tests
 build-app.sh                   Builds, signs, and optionally installs the .app
-```
-
-## Migrating from the Node script
-
-If you used the old Node script, retire its launchd job once the app is working:
-
-```bash
-launchctl bootout gui/$(id -u)/<your-job-label>
-rm ~/Library/LaunchAgents/<your-job-label>.plist
+VERSION                        App version shown in the menu (bump it in each PR)
 ```

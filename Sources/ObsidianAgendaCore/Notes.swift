@@ -6,7 +6,7 @@ public func cleanTitle(_ title: String) -> String {
 }
 
 public enum Notes {
-    public static let dailyNoteTitle = "Today's Meetings.md"
+    public static let agendaNoteTitle = "Today's Meetings.md"
 
     /// Basenames (without .md) of every note in the vault.
     public static func scanVault(_ vault: URL) -> Set<String> {
