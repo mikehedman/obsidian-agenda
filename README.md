@@ -37,14 +37,19 @@ Plain `./build-app.sh` does not touch the copy in `/Applications`; use `install`
 
 The app version comes from the latest `vX.Y.Z` git tag ([semantic versioning](https://semver.org)), and the build number is the short commit hash, with `-dirty` appended when `Sources/` or `Package.swift` have uncommitted changes. The menu shows both, e.g. **Version 1.1.0 (b853e40)**, so you can confirm which build is running.
 
-To cut a release:
+Changes go through a pull request; releases are tagged on `main` after the merge.
 
 ```bash
+git checkout -b my-change                  # never commit directly to main
 swift test
-git commit -am "..."                       # commit the change
+git commit -am "..."
+git push -u origin my-change
+gh pr create --fill                        # open the PR, review, then merge on GitHub
+
+git checkout main && git pull              # after the merge
 git tag -a v1.2.0 -m "v1.2.0: summary"     # bump patch for fixes, minor for features, major for breaking changes
+git push origin v1.2.0
 ./build-app.sh install                     # build, install to /Applications, and relaunch
-git push --follow-tags                     # push the commit and the tag
 ```
 
 Then check that the menu shows the new version and commit.
@@ -74,13 +79,4 @@ Sources/ObsidianAgendaCore/   Meeting model and note generation (unit tested)
 Sources/ObsidianAgenda/       App: calendar access, scheduler, alerts, Obsidian writer
 Tests/                         Core tests
 build-app.sh                   Builds, signs, and optionally installs the .app
-```
-
-## Migrating from the Node script
-
-If you used the old Node script, retire its launchd job once the app is working:
-
-```bash
-launchctl bootout gui/$(id -u)/<your-job-label>
-rm ~/Library/LaunchAgents/<your-job-label>.plist
 ```
