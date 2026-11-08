@@ -1,17 +1,17 @@
 # ObsidianAgenda
 
-A native macOS menu bar app that turns your Mac Calendar into an Obsidian daily agenda and gives you silent, escalating on-screen meeting reminders.
+A native macOS menu bar app that gives you silent, escalating on-screen meeting reminders and opens an Obsidian note for each meeting.
 
 It replaces this repo's original Node.js script + launchd job. The old version is still available in the git history (everything before the Swift rewrite commit).
 
 ## Features
 
-- **Daily agenda note**: writes `Today's Meetings.md` in your Obsidian vault from a Mac Calendar.
+- **Meeting agenda**: keeps `Today's Meetings.md` in your Obsidian vault, listing today's meetings with links to each meeting's note. This is a plain note, not an Obsidian Daily Note.
 - **Escalating, silent reminders** on every monitor:
   - **T-5 min**: amber countdown in the menu bar.
   - **T-3 min**: banner.
   - **T-1 min**: the banner flashes and stays until clicked.
-- **Open note**: jumps to the meeting's Obsidian page (creating it in the new-meetings folder if needed).
+- **Open note**: opens the Obsidian note named after the meeting title, or creates it in the new-meetings folder if it doesn't exist.
 - **Join / Join + open note**: shown when the event has a Zoom, Teams, Google Meet, or Webex link (also inside Outlook Safe Links). Zoom and Teams links open straight in the app when it's installed.
 - **Login Item**: registers itself on first launch; toggle it from the app's menu.
 

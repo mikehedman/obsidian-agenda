@@ -1,6 +1,6 @@
 # ObsidianAgenda
 
-macOS menu bar app (Swift package): reads meetings via EventKit, shows escalating alerts, and writes a daily Obsidian note. See README.md for build, layout, and release details.
+macOS menu bar app (Swift package): reads meetings via EventKit, shows escalating alerts, and opens (or creates) an Obsidian note named after each meeting. It also keeps a `Today's Meetings.md` agenda in the vault that links to those notes. It does not use Obsidian's Daily Notes. See README.md for build, layout, and release details.
 
 ## Rules
 

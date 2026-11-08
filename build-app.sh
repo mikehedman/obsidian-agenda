@@ -23,7 +23,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>LSMinimumSystemVersion</key><string>14.0</string>
   <key>LSUIElement</key><true/>
   <key>NSCalendarsFullAccessUsageDescription</key>
-  <string>ObsidianAgenda reads your meetings to remind you before they start and to write your daily Obsidian note.</string>
+  <string>ObsidianAgenda reads your meetings to remind you before they start and to open their Obsidian notes.</string>
 </dict></plist>
 PLIST
 codesign --force --sign - "$APP"
