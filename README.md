@@ -35,20 +35,19 @@ Plain `./build-app.sh` does not touch the copy in `/Applications`; use `install`
 
 ## Versioning and releases
 
-The app version comes from the latest `vX.Y.Z` git tag ([semantic versioning](https://semver.org)), and the build number is the short commit hash, with `-dirty` appended when `Sources/` or `Package.swift` have uncommitted changes. The menu shows both, e.g. **Version 1.1.0 (b853e40)**, so you can confirm which build is running.
+The app version comes from the `VERSION` file ([semantic versioning](https://semver.org)), and the build number is the short commit hash, with `-dirty` appended when `Sources/`, `Package.swift`, or `VERSION` have uncommitted changes. The menu shows both, e.g. **Version 1.2.0 (b853e40)**, so you can confirm which build is running.
 
-Changes go through a pull request; releases are tagged on `main` after the merge.
+Every change goes through a pull request, and the version bump is part of it:
 
 ```bash
 git checkout -b my-change                  # never commit directly to main
+# edit code, and bump VERSION: patch for fixes, minor for features, major for breaking changes
 swift test
 git commit -am "..."
 git push -u origin my-change
-gh pr create --fill                        # open the PR, review, then merge on GitHub
+gh pr create --fill                        # review, then merge on GitHub
 
 git checkout main && git pull              # after the merge
-git tag -a v1.2.0 -m "v1.2.0: summary"     # bump patch for fixes, minor for features, major for breaking changes
-git push origin v1.2.0
 ./build-app.sh install                     # build, install to /Applications, and relaunch
 ```
 
@@ -79,4 +78,5 @@ Sources/ObsidianAgendaCore/   Meeting model and note generation (unit tested)
 Sources/ObsidianAgenda/       App: calendar access, scheduler, alerts, Obsidian writer
 Tests/                         Core tests
 build-app.sh                   Builds, signs, and optionally installs the .app
+VERSION                        App version shown in the menu (bump it in each PR)
 ```
