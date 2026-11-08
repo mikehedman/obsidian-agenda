@@ -28,7 +28,13 @@ final class Scheduler: NSObject, NSMenuDelegate {
 
         alerts.onDismiss = { [weak self] meeting in self?.dismiss(meeting) }
         alerts.onOpenNote = { [weak self] meeting in
-            if let url = self?.writer.noteURL(for: meeting) { NSWorkspace.shared.open(url) }
+            self?.openNote(meeting)
+            self?.dismiss(meeting)
+        }
+        alerts.onJoin = { [weak self] meeting, alsoOpenNote in
+            // Open the note first so the meeting app ends up in front.
+            if alsoOpenNote { self?.openNote(meeting) }
+            if let url = meeting.joinURL { Self.openJoinLink(url) }
             self?.dismiss(meeting)
         }
         registerLoginItemIfNeeded()
@@ -57,10 +63,24 @@ final class Scheduler: NSObject, NSMenuDelegate {
     func startTestAlert() {
         let start = Date().addingTimeInterval(50)
         testMeeting = Meeting(id: "test", title: "Test meeting", start: start,
-                              end: start.addingTimeInterval(1800), timeScale: 1.0 / 6)
+                              end: start.addingTimeInterval(1800), timeScale: 1.0 / 6,
+                              joinURL: URL(string: "https://zoom.us/test"))
         dismissed.remove("test")
         stickyOverlay = nil
         tick()
+    }
+
+    private func openNote(_ meeting: Meeting) {
+        if let url = writer.noteURL(for: meeting) { NSWorkspace.shared.open(url) }
+    }
+
+    /// Prefer the Zoom/Teams app scheme when that app is installed, so no browser tab is left behind.
+    private static func openJoinLink(_ url: URL) {
+        if let native = MeetingLink.nativeURL(for: url), NSWorkspace.shared.urlForApplication(toOpen: native) != nil {
+            NSWorkspace.shared.open(native)
+        } else {
+            NSWorkspace.shared.open(url)
+        }
     }
 
     private func dismiss(_ meeting: Meeting) {

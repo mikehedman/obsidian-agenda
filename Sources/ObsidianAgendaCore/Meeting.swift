@@ -7,13 +7,16 @@ public struct Meeting: Equatable {
     public let end: Date
     /// 1 = real time. Smaller values compress the alert stages (used by "Test alert").
     public let timeScale: Double
+    /// Zoom / Teams / Meet / Webex link found in the event, if any.
+    public let joinURL: URL?
 
-    public init(id: String, title: String, start: Date, end: Date, timeScale: Double = 1) {
+    public init(id: String, title: String, start: Date, end: Date, timeScale: Double = 1, joinURL: URL? = nil) {
         self.id = id
         self.title = title
         self.start = start
         self.end = end
         self.timeScale = timeScale
+        self.joinURL = joinURL
     }
 }
 

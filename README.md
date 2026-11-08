@@ -12,6 +12,7 @@ It replaces this repo's original Node.js script + launchd job. The old version i
   - **T-3 min**: banner.
   - **T-1 min**: the banner flashes and stays until clicked.
 - **Open note**: jumps to the meeting's Obsidian page (creating it in the new-meetings folder if needed).
+- **Join / Join + open note**: shown when the event has a Zoom, Teams, Google Meet, or Webex link (also inside Outlook Safe Links). Zoom and Teams links open straight in the app when it's installed.
 - **Login Item**: registers itself on first launch; toggle it from the app's menu.
 
 ## Requirements

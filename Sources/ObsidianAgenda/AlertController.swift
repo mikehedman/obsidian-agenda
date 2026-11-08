@@ -17,6 +17,8 @@ final class AlertPanel: NSPanel {
 final class AlertController {
     var onDismiss: ((Meeting) -> Void)?
     var onOpenNote: ((Meeting) -> Void)?
+    /// Join the meeting's video call; the Bool says whether to also open the note.
+    var onJoin: ((Meeting, Bool) -> Void)?
 
     private struct Entry {
         let panel: AlertPanel
@@ -89,9 +91,15 @@ final class AlertController {
 
             let title = Self.label(meeting.title, size: 28, weight: .bold)
             let countdown = Self.label("", size: 20, weight: .medium)
-            let button = NSButton(title: "Open note", target: nil, action: nil)
-            button.bezelStyle = .rounded
-            let stack = NSStackView(views: [title, countdown, button])
+            var buttons = [Self.button("Open note") { [weak self] in self?.onOpenNote?(meeting) }]
+            if meeting.joinURL != nil {
+                buttons.append(Self.button("Join") { [weak self] in self?.onJoin?(meeting, false) })
+                buttons.append(Self.button("Join + open note") { [weak self] in self?.onJoin?(meeting, true) })
+            }
+            let buttonRow = NSStackView(views: buttons)
+            buttonRow.orientation = .horizontal
+            buttonRow.spacing = 10
+            let stack = NSStackView(views: [title, countdown, buttonRow])
             stack.orientation = .vertical
             stack.spacing = 8
             stack.translatesAutoresizingMaskIntoConstraints = false
@@ -101,10 +109,6 @@ final class AlertController {
                 stack.centerYAnchor.constraint(equalTo: background.centerYAnchor),
                 stack.widthAnchor.constraint(lessThanOrEqualTo: background.widthAnchor, constant: -40),
             ])
-            let handler = ButtonHandler { [weak self] in self?.onOpenNote?(meeting) }
-            button.target = handler
-            button.action = #selector(ButtonHandler.fire)
-            objc_setAssociatedObject(button, &ButtonHandler.key, handler, .OBJC_ASSOCIATION_RETAIN)
 
             panel.orderFrontRegardless()
             entries.append(Entry(panel: panel, countdown: countdown, background: background))
@@ -125,6 +129,16 @@ final class AlertController {
         let size = NSSize(width: 560, height: 150)
         let f = screen.visibleFrame
         return NSRect(x: f.midX - size.width / 2, y: f.maxY - size.height - 40, width: size.width, height: size.height)
+    }
+
+    private static func button(_ title: String, action: @escaping () -> Void) -> NSButton {
+        let button = NSButton(title: title, target: nil, action: nil)
+        button.bezelStyle = .rounded
+        let handler = ButtonHandler(action)
+        button.target = handler
+        button.action = #selector(ButtonHandler.fire)
+        objc_setAssociatedObject(button, &ButtonHandler.key, handler, .OBJC_ASSOCIATION_RETAIN)
+        return button
     }
 
     private static func label(_ text: String, size: CGFloat, weight: NSFont.Weight) -> NSTextField {
